@@ -5,9 +5,7 @@ Kubectl plugins
 
 |        plugin       | description |
 |---------------------|-------------|
-| prune               | Delete secrets or configmaps that are not being used in
-a given namespace. It checks from mounted volumes, env, envFrom and
-imagePullSecrets.
+| prune               | Delete secrets or configmaps that are not being used in a given namespace. It checks from mounted volumes, env, envFrom and imagePullSecrets.
 
 ## Getting started
 
