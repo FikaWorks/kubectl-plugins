@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Krew plugin which delete secrets or configmaps that are not being used in a
+# Kubectl plugin which delete secrets or configmaps that are not being used in a
 # given namespace. It checks from mounted volumes, env, envFrom and
 # imagePullSecrets.
 #

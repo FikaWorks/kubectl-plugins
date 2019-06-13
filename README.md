@@ -1,19 +1,24 @@
-Krew prune plugin
-=================
+Kubectl plugins
+===============
 
-> Krew plugin which delete secrets or configmaps that are not being used in a
-given namespace. It checks from mounted volumes, env, envFrom and
+> Kubectl plugins repository.
+
+|        plugin       | description |
+|---------------------|-------------|
+| prune               | Delete secrets or configmaps that are not being used in
+a given namespace. It checks from mounted volumes, env, envFrom and
 imagePullSecrets.
 
 ## Getting started
 
-Install as a kubectl plugin using [krew](https://krew.dev). Refer to the
+Install [krew](https://krew.dev) to manage Kubectl plugins. Refer to the
 [Krew documentation](https://krew.dev) to get started.
 
 ```bash
+# install the prune plugin
 $ kubectl krew install prune
 
-# Usage:
+# usage
 $ kubectl prune <resource type> <namespace>
 
 # delete unused secrets
