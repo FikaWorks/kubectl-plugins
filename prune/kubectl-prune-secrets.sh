@@ -23,7 +23,7 @@ do
       echo ""
       echo "Options:"
       echo "    -n, --namespace='': If present, the namespace scope for this CLI request"
-      echo "    -h, --help='': Deplay this help"
+      echo "    -h, --help='': Display this help"
       exit 0
       ;;
     *)

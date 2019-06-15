@@ -31,7 +31,7 @@ Usage:
 
 Options:
     -n, --namespace='': If present, the namespace scope for this CLI request
-    -h, --help='': Deplay this help
+    -h, --help='': Display this help
 ```
 
 ### prune-secrets usage
@@ -47,5 +47,5 @@ Usage:
 
 Options:
     -n, --namespace='': If present, the namespace scope for this CLI request
-    -h, --help='': Deplay this help
+    -h, --help='': Display this help
 ```
