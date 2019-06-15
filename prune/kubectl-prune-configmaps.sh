@@ -44,6 +44,8 @@ do
       -o jsonpath='{.items[*].spec.jobTemplate.spec.template.spec.'${field}'}')
   deploy_resources=$(kubectl get deploy $namespace_arg \
       -o jsonpath='{.items[*].spec.template.spec.'${field}'}')
+  ds_resources=$(kubectl get ds $namespace_arg \
+      -o jsonpath='{.items[*].spec.template.spec.'${field}'}')
   job_resources=$(kubectl get jobs $namespace_arg \
       -o jsonpath='{.items[*].spec.template.spec.'${field}'}')
   pod_resources=$(kubectl get pods $namespace_arg \
@@ -58,6 +60,7 @@ do
   resources=$(echo "
     ${cronjob_resources}
     ${deploy_resources}
+    ${ds_resources}
     ${job_resources}
     ${pod_resources}
     ${rc_resources}
