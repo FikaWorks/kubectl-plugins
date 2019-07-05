@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Delete unused secrets by checking references from env, envFrom, volumes and
-# imagePullSecrets.
+# Prune unused configmaps by checking references from env, envFrom and volumes.
 
 set -e
 
@@ -14,12 +13,11 @@ do
       shift
       ;;
     -h|--help)
-      echo "Delete secrets that are not being used in a given namespace. It "
-      echo "checks against all resources from mounted volumes, env, envFrom and"
-      echo "imagePullSecrets."
+      echo "Prune configmaps that are not being used in a given namespace. It"
+      echo "checks against all resources from mounted volumes, env and envFrom."
       echo ""
       echo "Usage:"
-      echo "    kubectl prune-secrets [options]"
+      echo "    kubectl prune-unused configmaps [options]"
       echo ""
       echo "Options:"
       echo "    -n, --namespace='': If present, the namespace scope for this CLI request"
@@ -33,12 +31,11 @@ do
 done
 
 declare -a pod_field_list=(
-  "containers[*].envFrom[*].secretRef.name"
-  "containers[*].env[*].valueFrom.secretKeyRef.name"
-  "imagePullSecrets[*].name"
-  "initContainers[*].envFrom[*].secretRef.name"
-  "initContainers[*].env[*].valueFrom.secretKeyRef.name"
-  "volumes[*].secret.secretName"
+  "containers[*].envFrom[*].configMapRef.name"
+  "containers[*].env[*].valueFrom.configMapKeyRef.name"
+  "initContainers[*].envFrom[*].configMapRef.name"
+  "initContainers[*].env[*].valueFrom.configMapKeyRef.name"
+  "volumes[*].configMap.name"
 )
 
 for field in ${pod_field_list[@]}
@@ -74,11 +71,11 @@ do
   used_resources="${used_resources} ${resources}"
 done
 
-# get all secrets
-available_resources=$(kubectl get secrets $namespace_arg \
+# get all configmaps
+available_resources=$(kubectl get configmaps $namespace_arg \
   -o jsonpath='{.items[*].metadata.name}' | xargs -n1 | uniq)
 
-# only keep unused secrets
+# only keep unused configmaps
 resource_name_list=""
 for available_name in $available_resources
 do
@@ -104,7 +101,7 @@ then
   exit 0
 fi
 
-echo "About to delete the following secrets: ${resource_name_list}"
+echo "About to delete the following configMaps: ${resource_name_list}"
 
 # confirmation prompt
 read -p "Delete listed resources? (yes/no): " -r
@@ -112,6 +109,6 @@ if [[ $REPLY =~ ^[Yy]es$ ]]
 then
   for resource_name in $resource_name_list
   do
-    kubectl delete secret $resource_name $namespace_arg
+    kubectl delete configmap $resource_name $namespace_arg
   done
 fi
