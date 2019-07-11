@@ -1,30 +1,42 @@
 #!/usr/bin/env bash
-# Prune unused secrets by checking references from env, envFrom, volumes and
+# Prune unused resources by checking references from env, envFrom, volumes and
 # imagePullSecrets.
 
 set -e
 
 namespace_arg=""
-while test $# -gt 0
+
+function usage() {
+  echo "Prune unused configmaps/secret resources from a given namespace. It"
+  echo "checks against all resources from mounted volumes, env and envFrom and"
+  echo "imagePullSecrets."
+  echo ""
+  echo "Usage:"
+  echo "    kubectl prune-unused <configmaps|secrets> [options]"
+  echo ""
+  echo "Options:"
+  echo "    -n, --namespace='': If present, the namespace scope for this CLI request"
+  echo "    -h, --help='': Display this help"
+  exit 0
+}
+
+if [ "$1" == "" ]
+then
+  usage
+fi
+
+resource=$1
+
+while test $# -gt 1
 do
-  case "$1" in
+  case "$2" in
     -n|--namespace)
       shift
-      namespace_arg="--namespace=$1"
+      namespace_arg="--namespace=$2"
       shift
       ;;
     -h|--help)
-      echo "Prune secrets that are not being used in a given namespace. It"
-      echo "checks against all resources from mounted volumes, env, envFrom and"
-      echo "imagePullSecrets."
-      echo ""
-      echo "Usage:"
-      echo "    kubectl prune-unused secrets [options]"
-      echo ""
-      echo "Options:"
-      echo "    -n, --namespace='': If present, the namespace scope for this CLI request"
-      echo "    -h, --help='': Display this help"
-      exit 0
+      usage
       ;;
     *)
       break
@@ -32,14 +44,31 @@ do
   esac
 done
 
-declare -a pod_field_list=(
-  "containers[*].envFrom[*].secretRef.name"
-  "containers[*].env[*].valueFrom.secretKeyRef.name"
-  "imagePullSecrets[*].name"
-  "initContainers[*].envFrom[*].secretRef.name"
-  "initContainers[*].env[*].valueFrom.secretKeyRef.name"
-  "volumes[*].secret.secretName"
-)
+case "$resource" in
+  configmaps|cm|configmap)
+    declare -a pod_field_list=(
+      "containers[*].envFrom[*].configMapRef.name"
+      "containers[*].env[*].valueFrom.configMapKeyRef.name"
+      "initContainers[*].envFrom[*].configMapRef.name"
+      "initContainers[*].env[*].valueFrom.configMapKeyRef.name"
+      "volumes[*].configMap.name"
+    )
+    ;;
+  secrets|secret)
+    declare -a pod_field_list=(
+      "containers[*].envFrom[*].secretRef.name"
+      "containers[*].env[*].valueFrom.secretKeyRef.name"
+      "imagePullSecrets[*].name"
+      "initContainers[*].envFrom[*].secretRef.name"
+      "initContainers[*].env[*].valueFrom.secretKeyRef.name"
+      "volumes[*].secret.secretName"
+    )
+    ;;
+  *)
+    echo "Resource \"$resource\" is invalid"
+    usage
+    ;;
+esac
 
 for field in ${pod_field_list[@]}
 do
@@ -74,11 +103,11 @@ do
   used_resources="${used_resources} ${resources}"
 done
 
-# get all secrets
-available_resources=$(kubectl get secrets $namespace_arg \
+# get all resources
+available_resources=$(kubectl get $resource $namespace_arg \
   -o jsonpath='{.items[*].metadata.name}' | xargs -n1 | uniq)
 
-# only keep unused secrets
+# only keep unused resources
 resource_name_list=""
 for available_name in $available_resources
 do
@@ -100,18 +129,18 @@ done
 
 if [ "$resource_name_list" == "" ]
 then
-  echo "No resource found."
+  echo "No unused resource(s) found."
   exit 0
 fi
 
-echo "About to delete the following secrets: ${resource_name_list}"
+echo "About to delete the following $resource: ${resource_name_list}"
 
 # confirmation prompt
-read -p "Delete listed resources? (yes/no): " -r
+read -p "Delete listed resource(s)? [yes/no]: " -r
 if [[ $REPLY =~ ^[Yy]es$ ]]
 then
   for resource_name in $resource_name_list
   do
-    kubectl delete secret $resource_name $namespace_arg
+    kubectl delete $resource $resource_name $namespace_arg
   done
 fi
