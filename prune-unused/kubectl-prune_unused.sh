@@ -16,7 +16,7 @@ function usage() {
   echo ""
   echo "Options:"
   echo "    -n, --namespace='': If present, the namespace scope for this CLI request"
-  echo "    -h, --help='': Display this help"
+  echo "    -h, --help: Display this help"
   exit 0
 }
 
@@ -30,9 +30,14 @@ resource=$1
 while test $# -gt 1
 do
   case "$2" in
-    -n|--namespace)
-      shift
-      namespace_arg="--namespace=$2"
+    -n|--namespace*)
+      if [[ $2 == *"="* ]]
+      then
+        namespace_arg=${2#=*}
+      else
+        shift
+        namespace_arg="--namespace=${2}"
+      fi
       shift
       ;;
     -h|--help)
