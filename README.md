@@ -9,7 +9,7 @@ kubectl experience.
 |  plugin      | description |
 |--------------|-------------|
 | prune-unused | Prune secrets or configmaps that are not being used in a given namespace. It checks against all resources from mounted volumes, env, envFrom and imagePullSecrets.
-| exec-cronjob | Run a cron job immediately by extracting the Job spec and creating a Job instance thereof.
+| exec-cronjob | Run a CronJob immediately as Job by extracting the Job spec and creating a Job instance thereof.
 
 ## Getting started
 
@@ -44,7 +44,7 @@ $ kubectl krew install exec-cronjob
 ```
 
 ```
-Run a cron job immediately by extracting the Job spec and creating a Job
+Run a CronJob immediately as Job by extracting the Job spec and creating a Job
 instance thereof.
 
 Usage:

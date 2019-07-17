@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Run a cron job immediately by extracting the Job spec and creating a Job
-# instance thereof.
+# Run a CronJob immediately as Job by extracting the Job spec and creating a
+# Job instance thereof.
 
 set -ex
 
 function usage() {
-  echo "Run a cron job immediately by extracting the Job spec and creating a"
-  echo "Job instance thereof."
+  echo "Run a CronJob immediately as Job by extracting the Job spec and"
+  echo "creating a Job instance thereof."
   echo ""
   echo "Usage:"
   echo "    kubectl exec-cronjob <name> [options]"
