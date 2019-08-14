@@ -16,6 +16,7 @@ function usage() {
   echo ""
   echo "Options:"
   echo "    -n, --namespace='': If present, the namespace scope for this CLI request"
+  echo "    --dry-run: If true, only print the object that would be pruned, without deleting it."
   echo "    -h, --help: Display this help"
   exit 0
 }
@@ -26,6 +27,7 @@ then
 fi
 
 resource=$1
+dry_run="false"
 
 while test $# -gt 1
 do
@@ -38,6 +40,10 @@ do
         shift
         namespace_arg="--namespace=${2}"
       fi
+      shift
+      ;;
+    --dry-run)
+      dry_run="true"
       shift
       ;;
     -h|--help)
@@ -138,14 +144,12 @@ then
   exit 0
 fi
 
-echo "About to delete the following $resource: ${resource_name_list}"
-
-# confirmation prompt
-read -p "Delete listed resource(s)? [yes/no]: " -r
-if [[ $REPLY =~ ^[Yy]es$ ]]
-then
-  for resource_name in $resource_name_list
-  do
+for resource_name in $resource_name_list
+do
+  if [ "$dry_run" == "true" ]
+  then
+    echo "${resource} ${resource_name} deleted (dry run)"
+  else
     kubectl delete $resource $resource_name $namespace_arg
-  done
-fi
+  fi
+done
