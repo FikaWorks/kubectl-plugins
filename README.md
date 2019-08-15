@@ -33,6 +33,7 @@ Usage:
 
 Options:
     -n, --namespace='': If present, the namespace scope for this CLI request
+    --dry-run: If true, only print the object that would be pruned, without deleting it.
     -h, --help: Display this help
 ```
 
