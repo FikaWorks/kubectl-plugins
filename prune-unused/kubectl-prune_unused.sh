@@ -21,7 +21,7 @@ function usage() {
   exit 0
 }
 
-if [ "$1" == "" ]
+if [[ $# -lt 1 ]] || [[ "$1" == "-"* ]]
 then
   usage
 fi
