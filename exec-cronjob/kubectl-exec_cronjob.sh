@@ -2,7 +2,7 @@
 # Run a CronJob immediately as Job by extracting the Job spec and creating a
 # Job instance thereof.
 
-set -ex
+set -e
 
 function usage() {
   echo "Run a CronJob immediately as Job by extracting the Job spec and"
@@ -18,7 +18,7 @@ function usage() {
   exit 0
 }
 
-if [ $# -lt 1 ]
+if [[ $# -lt 1 ]] || [[ "$1" == "-"* ]]
 then
   usage
 fi
