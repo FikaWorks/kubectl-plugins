@@ -8,8 +8,9 @@ kubectl experience.
 
 |  plugin      | description |
 |--------------|-------------|
-| prune-unused | Prune secrets or configmaps that are not being used in a given namespace. It checks against all resources from mounted volumes, env, envFrom and imagePullSecrets.
-| exec-cronjob | Run a CronJob immediately as Job by extracting the Job spec and creating a Job instance thereof.
+| prune-unused    | Prune secrets or configmaps that are not being used in a given namespace. It checks against all resources from mounted volumes, env, envFrom and imagePullSecrets.
+| exec-cronjob    | Run a CronJob immediately as Job by extracting the Job spec and creating a Job instance thereof.
+| rolling-restart | Trigger a Rolling Restart of a deployment's pods.
 
 ## Getting started
 
@@ -55,4 +56,26 @@ Options:
     -n, --namespace='': If present, the namespace scope for this CLI request
     --dry-run: If true, only print the object that would be sent, without sending it.
     -h, --help: Display this help
+```
+
+### Exec rolling-restart
+
+```bash
+# install the rolling-restart plugin
+$ kubectl krew install rolling-restart
+```
+
+```
+Trigger a Rolling Restart of a deployment.
+
+Usage:
+    kubectl rolling_restart <deployment> [options]
+
+Options:
+    -n, --namespace='': If present, the namespace scope for this CLI request
+    -d, --delay='': the delay to wait between each pod being restarted, in seconds [default:5]
+    -w, --wait: If set, wait for the resource to be deleted before continuing [default]
+    --no-wait: If set, do not wait for the resource to be deleted before continuing
+    -h, --help: Display this help
+
 ```
