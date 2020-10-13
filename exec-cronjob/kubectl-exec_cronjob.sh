@@ -5,6 +5,12 @@
 set -e
 
 function usage() {
+  echo "DEPRECATION NOTICE:"
+  echo "This plugin isn't necessary anymore, the kubectl cli let you create"
+  echo "cronjob with the create subcommand:"
+  echo "    kubectl create job --from cronjob/my-cronjob my-job"
+  echo ""
+  echo ""
   echo "Run a CronJob immediately as Job by extracting the Job spec and"
   echo "creating a Job instance thereof."
   echo ""
