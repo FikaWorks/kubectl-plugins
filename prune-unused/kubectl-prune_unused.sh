@@ -4,6 +4,7 @@
 
 set -e
 
+label_arg=""
 namespace_arg=""
 
 function usage() {
@@ -15,6 +16,7 @@ function usage() {
   echo "    kubectl prune-unused <configmaps|secrets> [options]"
   echo ""
   echo "Options:"
+  echo "    -l, --selector='': Selector (label query) to filter on, supports '=', '==', and '!='.(e.g. -l key1=value1,key2=value2)"
   echo "    -n, --namespace='': If present, the namespace scope for this CLI request"
   echo "    --dry-run: If true, only print the object that would be pruned, without deleting it."
   echo "    -h, --help: Display this help"
@@ -32,6 +34,16 @@ dry_run="false"
 while test $# -gt 1
 do
   case "$2" in
+    -l|--selector*)
+      if [[ $2 == *"="* ]]
+      then
+        label_arg=${2#=*}
+      else
+        shift
+        label_arg="--selector=${2}"
+      fi
+      shift
+      ;;
     -n|--namespace*)
       if [[ $2 == *"="* ]]
       then
@@ -83,21 +95,21 @@ esac
 
 for field in ${pod_field_list[@]}
 do
-  cronjob_resources=$(kubectl get cronjobs $namespace_arg \
+  cronjob_resources=$(kubectl get cronjobs $label_arg $namespace_arg \
       -o jsonpath='{.items[*].spec.jobTemplate.spec.template.spec.'${field}'}')
-  deploy_resources=$(kubectl get deploy $namespace_arg \
+  deploy_resources=$(kubectl get deploy $label_arg $namespace_arg \
       -o jsonpath='{.items[*].spec.template.spec.'${field}'}')
-  ds_resources=$(kubectl get ds $namespace_arg \
+  ds_resources=$(kubectl get ds $label_arg $namespace_arg \
       -o jsonpath='{.items[*].spec.template.spec.'${field}'}')
-  job_resources=$(kubectl get jobs $namespace_arg \
+  job_resources=$(kubectl get jobs $label_arg $namespace_arg \
       -o jsonpath='{.items[*].spec.template.spec.'${field}'}')
-  pod_resources=$(kubectl get pods $namespace_arg \
+  pod_resources=$(kubectl get pods $label_arg $namespace_arg \
       -o jsonpath='{.items[*].spec.'${field}'}')
-  rs_resources=$(kubectl get rs $namespace_arg \
+  rs_resources=$(kubectl get rs $label_arg $namespace_arg \
       -o jsonpath='{.items[*].spec.template.spec.'${field}'}')
-  rc_resources=$(kubectl get rc $namespace_arg \
+  rc_resources=$(kubectl get rc $label_arg $namespace_arg \
       -o jsonpath='{.items[*].spec.template.spec.'${field}'}')
-  sts_resources=$(kubectl get sts $namespace_arg \
+  sts_resources=$(kubectl get sts $label_arg $namespace_arg \
       -o jsonpath='{.items[*].spec.template.spec.'${field}'}')
 
   resources=$(echo "
@@ -115,7 +127,7 @@ do
 done
 
 # get all resources
-available_resources=$(kubectl get $resource $namespace_arg \
+available_resources=$(kubectl get $resource $label_arg $namespace_arg \
   -o jsonpath='{.items[*].metadata.name}' | xargs -n1 | uniq)
 
 # only keep unused resources
@@ -150,6 +162,6 @@ do
   then
     echo "${resource} ${resource_name} deleted (dry run)"
   else
-    kubectl delete $resource $resource_name $namespace_arg
+    kubectl delete $resource $resource_name $label_arg $namespace_arg
   fi
 done

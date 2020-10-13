@@ -32,6 +32,7 @@ Usage:
     kubectl prune-unused <configmaps|secrets> [options]
 
 Options:
+    -l, --selector='': Selector (label query) to filter on, supports '=', '==', and '!='.(e.g. -l key1=value1,key2=value2)"
     -n, --namespace='': If present, the namespace scope for this CLI request
     --dry-run: If true, only print the object that would be pruned, without deleting it.
     -h, --help: Display this help
