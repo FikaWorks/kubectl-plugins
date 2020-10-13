@@ -39,6 +39,13 @@ Options:
 
 ### Exec cronjob
 
+> DEPRECATION NOTICE:
+> This plugin isn't necessary anymore, the kubectl cli let you create
+> cronjob with the create subcommand:
+> ```
+> $ kubectl create job --from cronjob/my-cronjob my-job
+> ```
+
 ```bash
 # install the exec-cronjob plugins
 $ kubectl krew install exec-cronjob
