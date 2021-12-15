@@ -18,6 +18,7 @@ function usage() {
   echo "    kubectl exec-cronjob <name> [options]"
   echo ""
   echo "Options:"
+  echo "    --context='': If present, the name of the kubeconfig context for this CLI request"
   echo "    -n, --namespace='': If present, the namespace scope for this CLI request"
   echo "    --dry-run: If true, only print the object that would be sent, without sending it."
   echo "    -h, --help: Display this help"
@@ -31,11 +32,22 @@ fi
 
 cronjob_name=$1
 dry_run_arg=""
+context_arg=""
 namespace_arg=""
 
 while test $# -gt 1
 do
   case "$2" in
+    --context*)
+      if [[ $2 == *"="* ]]
+      then
+        context_arg=${2#=*}
+      else
+        shift
+        context_arg="--context=${2}"
+      fi
+      shift
+      ;;
     -n|--namespace*)
       if [[ $2 == *"="* ]]
       then
@@ -59,7 +71,7 @@ do
   esac
 done
 
-cron_job=$(kubectl get cronjob $namespace_arg -o yaml $cronjob_name)
+cron_job=$(kubectl $context_arg get cronjob $namespace_arg -o yaml $cronjob_name)
 
 api_version=$(echo $cron_job | awk '/^apiVersion: / {print $2}')
 
@@ -75,4 +87,4 @@ job_spec=$(echo "$cron_job" | awk -v name=$cronjob_name '
 ')
 
 echo "${job}
-${job_spec}" | kubectl apply -f - $dry_run_arg $namespace_arg
+${job_spec}" | kubectl $context_arg apply -f - $dry_run_arg $namespace_arg
