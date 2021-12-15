@@ -33,6 +33,7 @@ Usage:
 
 Options:
     -l, --selector='': Selector (label query) to filter on, supports '=', '==', and '!='.(e.g. -l key1=value1,key2=value2)"
+    --context='': If present, the name of the kubeconfig context for this CLI request
     -n, --namespace='': If present, the namespace scope for this CLI request
     --dry-run: If true, only print the object that would be pruned, without deleting it.
     -h, --help: Display this help
@@ -60,6 +61,7 @@ Usage:
     kubectl exec-cronjob <name> [options]
 
 Options:
+    --context='': If present, the name of the kubeconfig context for this CLI request
     -n, --namespace='': If present, the namespace scope for this CLI request
     --dry-run: If true, only print the object that would be sent, without sending it.
     -h, --help: Display this help
